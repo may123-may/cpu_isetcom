@@ -7,8 +7,7 @@
 //   3. Set SMTP_USER (your gmail) + SMTP_PASS (the 16-char app password) in .env
 
 const DEFAULT_RECIPIENTS = [
-  "mohamedamine.may@edu.isetcom.tn",
-  "farah.benammar@edu.isetcom.tn",
+  "benammarfarah7@gmail.com",
   "soulayma.afrit@edu.isetcom.tn",
 ];
 
