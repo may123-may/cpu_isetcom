@@ -1,0 +1,109 @@
+# CPU Robotics Club — Website Build Prompt
+
+Paste this whole prompt into your AI website builder of choice (v0, Claude, Cursor, Lovable, bolt.new...). It's written to be handed off as-is.
+
+---
+
+## 1. THE BRIEF
+
+Build a single-page website for **CPU Robotics Club** — the robotics branch of ISET'COM Tunis. The club works in three domains: **Artificial Intelligence**, **Embedded Systems**, and **IoT**. The site must feel like the club itself: precise, powerful, built by engineers, not by a marketing agency.
+
+Do not build a generic "SaaS startup" page. No rounded cards with soft grey shadows, no cream background with a serif headline, no tracked-out all-caps eyebrow labels above every section. This is a hardware/robotics brand — it should feel like a PCB silkscreen, an oscilloscope readout, a boot sequence. Confident, technical, a little aggressive — like the logo.
+
+## 2. VISUAL IDENTITY (extracted from the club logo)
+
+The logo is a bold, italic-leaning black wordmark "CPU" with one sharp cyan accent shape (the dot of the Í, and a cyan swipe cutting through the C), sitting above a black bar reading "ISET'COM BRANCH" with cyan edge-notches. Carry this exact language into the site.
+
+**Color tokens:**
+- `--ink: #0A0D11` — near-black background, slightly blue-cast (not a flat #111)
+- `--panel: #14181D` — secondary dark surface for cards/panels
+- `--signal: #2BAEE0` — the club's cyan, sampled from the logo (primary accent, use it like a warning light — sparingly, for the one thing that matters)
+- `--signal-dim: #1C6E8C` — muted cyan for secondary states/borders
+- `--white: #F4F6F7` — primary text on dark
+- `--steel: #8B96A1` — secondary/muted text
+
+**Typography:**
+- Display/headlines: a bold, slightly condensed geometric sans with attitude — **Archivo Black** or **Space Grotesk (700)**. Set it tight (letter-spacing -0.02em), large, and let it break across lines aggressively like the logo's diagonal "C".
+- Body: **Inter** or **General Sans**, regular weight, for readability.
+- Data/labels/code: **JetBrains Mono** — used only where real technical content appears (specs, terminal output, live readouts), never as decorative labels.
+- No all-caps section eyebrows. No middle-dot-separated meta strings. No arrow glyphs tacked onto every button.
+
+**Signature motif:** a thin cyan "trace line" (like a PCB copper trace) that runs down the left edge of the page as a fixed spine, and pulses faintly with a waveform tied to scroll position. This is the one recurring device — don't scatter three other decorative motifs alongside it.
+
+## 3. THE ONE BIG MOMENT (hero animation)
+
+On load, run a single orchestrated boot sequence — this is the site's signature moment, spend the animation budget here and keep everything else quiet:
+
+1. Black screen, a thin cyan trace draws itself (SVG stroke-dasharray animation) tracing the rough path of a circuit board.
+2. The trace resolves into the CPU wordmark powering on — letters snap in with a brief flicker/glitch, cyan accent ignites last (matching the logo's cyan dot/swipe).
+3. Tagline types out character by character, monospace, like a terminal boot log: e.g. `> initializing CPU_ROBOTICS_CLUB...` then resolves to the real headline.
+4. Everything settles, spine trace activates, page is ready.
+
+Total duration: under 2.5s, skippable/instant for reduced-motion users. Never repeat this animation on scroll — it happens once, on load, only.
+
+Everywhere else: motion responds to the user (hover, click, expand), not to scrolling into view. No fade-up-on-scroll for every section — that's the generic tell to avoid.
+
+## 4. PAGE STRUCTURE
+
+```
+[fixed cyan spine, left edge, whole page] 
+┌───────────────────────────────────────┐
+│  HERO                                  │  boot animation → headline,
+│                                         │  one-line mission, primary CTA
+├───────────────────────────────────────┤
+│  MANIFESTO                             │  short, punchy statement of what
+│                                         │  the club believes, left-aligned,
+│                                         │  live oscilloscope-style visual
+│                                         │  on the right reacting subtly
+├───────────────────────────────────────┤
+│  THREE DOMAINS (AI / EMBEDDED / IoT)   │  three chip-like panels, laid
+│  ┌────┐   ┌────┐   ┌────┐              │  out slightly offset like
+│  │ AI │   │EMB │   │IoT │              │  components on a board, not
+│  └────┘   └────┘   └────┘              │  identical rounded cards.
+│                                         │  Hover = panel "lifts" + trace
+│                                         │  lines light up underneath it
+├───────────────────────────────────────┤
+│  PROJECTS / BUILDS                     │  horizontal-scroll gallery,
+│  ←  [proj] [proj] [proj] [proj]  →     │  each project as a labelled
+│                                         │  board schematic card
+├───────────────────────────────────────┤
+│  JOIN                                  │  recruitment CTA styled as a
+│  > apply_now()                         │  terminal prompt / form
+├───────────────────────────────────────┤
+│  FOOTER                                │  contact, socials, closing
+│                                         │  trace line terminates here
+└───────────────────────────────────────┘
+```
+
+Left-align most content (matches the logo's dynamic diagonal energy); center only the hero's core headline block if needed.
+
+## 5. SECTION-BY-SECTION COPY DIRECTION
+
+- **Hero headline:** something short and declarative about building real machines — not "Welcome to CPU Robotics Club." Example direction: *"We build the machines that think for themselves."* Sub-line names the three domains plainly: AI, embedded systems, IoT.
+- **Manifesto:** 2–3 short sentences, first person plural, no jargon-stuffing. What the club actually does: students design, wire, and code real robots and systems, not slideshows.
+- **Three domain panels:** each gets a one-line definition in plain language (what it is, what the club does with it) — not a marketing tagline. E.g. Embedded Systems panel explains it's about writing the code that runs directly on hardware — motors, sensors, boards.
+- **Projects:** real or placeholder builds (autonomous rover, IoT server-room sensor rig, an AI vision project) each with a one-line spec strip (board used, sensors, what it does).
+- **Join:** direct, active-voice CTA — "Apply to join" not "Submit." State what happens next plainly (when applications are reviewed, what the process looks like).
+
+## 6. INTERACTION DETAIL
+
+- Domain panels: on hover/tap, panel lifts slightly and a thin cyan trace animates from the spine into the panel, like it's being powered — this is the interaction that mirrors the boot moment on a small scale.
+- Buttons: solid ink fill, cyan 1px border, on hover the border becomes a filled cyan glow — restrained, one accent color doing the work.
+- Respect `prefers-reduced-motion`: cut the boot sequence to an instant fade, disable the spine pulse.
+- Fully responsive down to mobile: spine becomes a thin top bar or disappears in favor of a simpler in-page marker; domain panels stack vertically.
+
+## 7. TECHNICAL NOTES
+
+- Build as a single responsive page (plain HTML/CSS/JS, or React if the tool defaults to it — no backend needed for a first version).
+- SVG for the trace lines and boot animation; CSS transitions/keyframes for hover states; avoid heavy animation libraries unless already available — keep it fast.
+- Visible keyboard focus states on all interactive elements.
+- Keep contrast accessible: white/steel text on the ink background must pass WCAG AA.
+
+## 8. WHAT TO AVOID
+
+- Cream/beige background, warm terracotta accent, serif display type
+- Rounded SaaS cards with identical soft shadows
+- ALL-CAPS eyebrow labels above every heading
+- Fade-and-slide-up animation repeated on every section as you scroll
+- Stock "→" arrows appended to every link/button
+- Generic stock photography of robots — favor schematic/line-art/board-trace illustration in the club's own visual language instead

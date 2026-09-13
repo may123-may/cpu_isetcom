@@ -1,0 +1,294 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@import "@fontsource/archivo-black/400.css";
+@import "@fontsource/space-grotesk/400.css";
+@import "@fontsource/space-grotesk/500.css";
+@import "@fontsource/space-grotesk/700.css";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/500.css";
+@import "@fontsource/jetbrains-mono/700.css";
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-rank: var(--rank);
+  --color-rank-glow: var(--rank-glow);
+  --color-monarch-gold: var(--monarch-gold);
+  --color-signal: var(--signal);
+  --color-signal-dim: var(--signal-dim);
+  --color-ink: var(--ink);
+  --color-panel: var(--panel);
+  --color-steel: var(--steel);
+  --font-display: "Archivo Black", sans-serif;
+  --font-grotesk: "Space Grotesk", sans-serif;
+  --font-jbmono: "JetBrains Mono", monospace;
+  --font-body: "Inter", sans-serif;
+}
+
+:root {
+  --radius: 0.25rem; /* hardware brand: sharp corners, not SaaS-round */
+  --background: #0a0d11;
+  --foreground: #f4f6f7;
+  --card: #14181d;
+  --card-foreground: #f4f6f7;
+  --popover: #14181d;
+  --popover-foreground: #f4f6f7;
+  --primary: #2baee0;
+  --primary-foreground: #0a0d11;
+  --secondary: #1c6e8c;
+  --secondary-foreground: #f4f6f7;
+  --muted: #14181d;
+  --muted-foreground: #8b96a1;
+  --accent: #2baee0;
+  --accent-foreground: #0a0d11;
+  --destructive: oklch(0.6 0.25 25);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: #1c6e8c55;
+  --input: #14181d;
+  --ring: #2baee0;
+
+  /* ── CPU Robotics Club identity (prompt.txt) ── */
+  --ink: #0a0d11; /* near-black, blue-cast background */
+  --panel: #14181d; /* secondary dark surface */
+  --signal: #2baee0; /* club cyan — the one accent */
+  --signal-dim: #1c6e8c; /* muted cyan for borders/secondary */
+  --white: #f4f6f7;
+  --steel: #8b96a1; /* muted text */
+
+  /* Dynamic rank color (JS overrides per rank-up — game layer only) */
+  --rank: oklch(0.5 0.15 250);
+  --rank-glow: oklch(0.7 0.2 250);
+  --monarch-gold: oklch(0.82 0.18 85);
+}
+
+.dark { color-scheme: dark; }
+
+@layer base {
+  * { border-color: var(--color-border); }
+  html, body, #root { min-height: 100%; }
+  body {
+    background-color: var(--ink);
+    color: var(--color-foreground);
+    font-family: var(--font-body);
+    overflow-x: hidden;
+  }
+  ::selection { background: var(--signal); color: var(--ink); }
+  :focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 2px;
+  }
+}
+
+/* ---------- CPU identity utilities ---------- */
+@utility font-display { font-family: var(--font-display); letter-spacing: -0.02em; }
+@utility font-grotesk { font-family: var(--font-grotesk); }
+@utility font-jbmono { font-family: var(--font-jbmono); }
+
+@utility rank-glow {
+  text-shadow:
+    0 0 10px var(--rank-glow),
+    0 0 30px var(--rank-glow),
+    0 0 60px color-mix(in oklab, var(--rank-glow) 50%, transparent);
+}
+
+@utility signal-glow {
+  text-shadow:
+    0 0 10px color-mix(in oklab, var(--signal) 80%, transparent),
+    0 0 30px color-mix(in oklab, var(--signal) 45%, transparent);
+}
+
+@utility gate-border {
+  border: 1px solid color-mix(in oklab, var(--signal) 60%, transparent);
+  box-shadow:
+    0 0 20px color-mix(in oklab, var(--signal) 35%, transparent),
+    inset 0 0 20px color-mix(in oklab, var(--signal) 12%, transparent);
+}
+
+/* Buttons: solid ink fill, cyan 1px border → filled cyan glow on hover */
+@utility hunter-input {
+  background: linear-gradient(180deg, #10141a 0%, var(--ink) 100%);
+  border: 1px solid color-mix(in oklab, var(--signal) 45%, transparent);
+  box-shadow:
+    0 0 12px color-mix(in oklab, var(--signal) 18%, transparent),
+    inset 0 1px 0 color-mix(in oklab, var(--signal) 15%, transparent);
+  color: var(--color-foreground);
+  transition: box-shadow 200ms, border-color 200ms;
+}
+@utility hunter-input-focus {
+  border-color: var(--signal);
+  box-shadow:
+    0 0 26px color-mix(in oklab, var(--signal) 50%, transparent),
+    inset 0 1px 0 color-mix(in oklab, var(--signal) 25%, transparent);
+  outline: none;
+}
+
+@utility hunter-button {
+  position: relative;
+  padding: 0.85rem 1.75rem;
+  background: linear-gradient(180deg, #10141a, var(--ink));
+  border: 1px solid color-mix(in oklab, var(--signal) 65%, transparent);
+  color: var(--color-foreground);
+  font-family: var(--font-grotesk);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 200ms, box-shadow 200ms, border-color 200ms, background 200ms;
+  box-shadow: 0 0 12px color-mix(in oklab, var(--signal) 20%, transparent);
+}
+@utility hunter-button-hover {
+  border-color: var(--signal);
+  transform: scale(1.03);
+  box-shadow:
+    0 0 28px color-mix(in oklab, var(--signal) 55%, transparent),
+    inset 0 0 18px color-mix(in oklab, var(--signal) 15%, transparent);
+}
+
+@utility shake {
+  animation: shake 0.5s;
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  10%,30%,50%,70%,90% { transform: translateX(-8px); }
+  20%,40%,60%,80% { transform: translateX(8px); }
+}
+
+@keyframes pulse-glow {
+  0%,100% { opacity: 0.5; transform: scale(1); }
+  50%     { opacity: 1;   transform: scale(1.05); }
+}
+@utility pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+
+@utility chat-msg-aria {
+  border-left: 2px solid var(--signal);
+  background: linear-gradient(90deg, color-mix(in oklab, var(--signal) 10%, transparent) 0%, transparent 100%);
+  box-shadow: 0 0 18px color-mix(in oklab, var(--signal) 15%, transparent);
+}
+@utility chat-msg-user {
+  border-right: 2px solid var(--steel);
+  background: linear-gradient(270deg, color-mix(in oklab, var(--steel) 14%, transparent) 0%, transparent 100%);
+}
+
+[dir="rtl"] .chat-msg-user { border-right: none; border-left: 2px solid var(--steel); }
+
+/* AI detection badge */
+.ai-badge {
+  text-shadow: 0 0 6px currentColor;
+  letter-spacing: 0.15em;
+  opacity: 0.85;
+}
+
+/* ---------- Schematic background ---------- */
+.schem-grid {
+  background-image:
+    linear-gradient(color-mix(in oklab, var(--signal) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklab, var(--signal) 7%, transparent) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 78%);
+}
+.trace-flow {
+  stroke-dasharray: 10 14;
+  animation: trace-flow 2.6s linear infinite;
+}
+@keyframes trace-flow {
+  to { stroke-dashoffset: -96; }
+}
+.schem-blink { animation: schem-blink 2.2s steps(2, jump-none) infinite; }
+@keyframes schem-blink {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+/* ---------- PCB spine (fixed left edge) ---------- */
+.cpu-spine { box-shadow: 0 0 12px color-mix(in oklab, var(--signal) 60%, transparent); }
+.spine-flow {
+  background: linear-gradient(180deg, transparent, var(--signal), transparent);
+  background-size: 100% 220%;
+  animation: spine-flow 3.2s linear infinite;
+}
+@keyframes spine-flow {
+  0% { background-position: 0 120%; }
+  100% { background-position: 0 -120%; }
+}
+.spine-packet {
+  box-shadow: 0 0 10px var(--signal), 0 0 22px color-mix(in oklab, var(--signal) 60%, transparent);
+  transition: top 120ms linear;
+}
+
+/* ---------- Boot sequence ---------- */
+.boot-trace {
+  stroke-dasharray: 1200;
+  stroke-dashoffset: 1200;
+  animation: boot-trace 0.7s ease-out forwards;
+  filter: drop-shadow(0 0 6px var(--signal));
+}
+@keyframes boot-trace {
+  to { stroke-dashoffset: 0; }
+}
+.boot-node { animation: schem-blink 0.5s steps(2, jump-none) 3; }
+.boot-flicker { animation: boot-flicker 0.55s steps(2, jump-none) forwards; }
+@keyframes boot-flicker {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  35% { opacity: 0.15; transform: translateX(-3px); }
+  50% { opacity: 1; transform: translateX(2px); }
+  65% { opacity: 0.4; transform: translateX(0); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+.boot-ignite {
+  animation: boot-ignite 0.5s ease-out forwards;
+}
+@keyframes boot-ignite {
+  from { filter: drop-shadow(0 0 0 rgba(43, 174, 224, 0)); }
+  to { filter: drop-shadow(0 0 26px rgba(43, 174, 224, 0.75)); }
+}
+.term-caret::after {
+  content: "▊";
+  color: var(--signal);
+  animation: schem-blink 0.9s steps(2, jump-none) infinite;
+}
+
+/* ---------- Hide scrollbar (keep scroll behaviour) ---------- */
+@utility no-scrollbar {
+  scrollbar-width: none;       /* Firefox */
+  -ms-overflow-style: none;    /* IE/Edge */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;               /* Chrome / Safari / Opera */
+}
+
+/* ---------- Reduced motion: instant, quiet ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .boot-trace, .boot-flicker, .boot-ignite, .trace-flow,
+  .spine-flow, .pulse-glow, .schem-blink {
+    animation: none !important;
+  }
+}
