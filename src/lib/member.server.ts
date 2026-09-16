@@ -8,7 +8,22 @@ export type Language = "fr" | "en" | "zh";
 // Set MEMBER_PASSWORD in .env (fallback: CPU_MEMBER_2026)
 // ──────────────────────────────────────────────────────────────────────────────
 export function getMemberPassword(): string {
-  return process.env.MEMBER_PASSWORD ?? "CPU_MEMBER_2026";
+  const raw = process.env.MEMBER_PASSWORD;
+  // .env est gitignoré : sur Vercel la variable peut être absente OU vide ("").
+  // "??" seul ne suffit pas ("" n'est pas nullish) → on retombe sur le défaut
+  // dans tous les cas où la variable est absente / vide / espaces uniquement.
+  if (!raw || !raw.trim()) {
+    return "CPU_MEMBER_2026";
+  }
+  return raw.trim();
+}
+
+/** Normalise un code saisi : enlève espaces, guillemets/copier-coller parasites, ZW chars. */
+export function normalizeAccessCode(v: string): string {
+  return (v ?? "")
+    .replace(/[\u200B-\u200D\uFEFF]/g, "") // zero-width chars (copier-coller mobile/WhatsApp)
+    .replace(/^["'`\s]+|["'`\s]+$/g, "") // guillemets / espaces autour
+    .trim();
 }
 
 // ──────────────────────────────────────────────────────────────────────────────

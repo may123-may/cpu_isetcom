@@ -313,10 +313,11 @@ export default function InterviewApp() {
 
   const submitPassword = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    if (!password || loading) return;
+    const cleaned = password.replace(/[\u200B-\u200D\uFEFF]/g, "").trim();
+    if (!cleaned || loading) return;
     setLoading(true);
     try {
-      const res = await verifyPw({ data: { password } });
+      const res = await verifyPw({ data: { password: cleaned } });
       if (res.ok) {
         setStep("interview");
         setGateOpen(true);

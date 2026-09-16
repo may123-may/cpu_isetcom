@@ -8,9 +8,20 @@ type Lang = z.infer<typeof LanguageSchema>;
 export const verifyPassword = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => z.object({ password: z.string() }).parse(d))
   .handler(async ({ data }) => {
-    const { getMemberPassword } = await import("./member.server");
-    const expected = getMemberPassword();
-    return { ok: data.password === expected };
+    const { getMemberPassword, normalizeAccessCode } = await import("./member.server");
+    const expected = normalizeAccessCode(getMemberPassword());
+    const entered = normalizeAccessCode(data.password);
+    if (!entered) return { ok: false };
+    // Comparaison tolérante : exacte d'abord, puis insensible à la casse
+    // (claviers mobiles qui capitalisent, codes dictés à l'oral, etc.)
+    const ok = entered === expected || entered.toLowerCase() === expected.toLowerCase();
+    if (!ok) {
+      console.warn(
+        `[AUTH] wrong access code (len=${entered.length}, expectedLen=${expected.length}). ` +
+          `Si le bon code échoue en prod, vérifiez MEMBER_PASSWORD dans le dashboard Vercel + redéployez (le .env local n'est jamais déployé, il est gitignoré).`,
+      );
+    }
+    return { ok };
   });
 
 // ---------- 2) Send an interview turn — calls the configured AI provider ----------
