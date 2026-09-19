@@ -365,17 +365,46 @@ export default function InterviewApp() {
     setAnsweredCount(newAnsweredCount);
     setLoading(true);
     try {
-      const [detectRes, res] = await Promise.all([
-        detectAiText({ data: { text: msg } }),
-        sendTurn({
-          data: {
-            language: lang,
-            history: messages,
-            message: msg,
-            questionNumber: newAnsweredCount,
+      // Détection AI = locale (0 appel API, instantané) -> ne surcharge plus le quota.
+      // Le tour d'interview réessaie 3x en cas de 429 (pics à N candidats).
+      const detectRes = await detectAiText({ data: { text: msg } }).catch(() => ({ percent: null as number | null }));
+      let res: { reply: string; complete: boolean } | null = null;
+      let lastErr: unknown = null;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          res = await sendTurn({
+            data: {
+              language: lang,
+              history: messages,
+              message: msg,
+              questionNumber: newAnsweredCount,
+            },
+          });
+          break;
+        } catch (err) {
+          lastErr = err;
+          await new Promise((r) => setTimeout(r, 2000 * (attempt + 1)));
+        }
+      }
+      if (!res) throw lastErr ?? new Error("ARIA indisponible");
+      // Si le serveur renvoie un message d'erreur [⚠ ...], on le montre mais on
+      // NE compte pas la réponse : le candidat peut réessayer sans perdre sa question.
+      if (res.reply.startsWith("[⚠")) {
+        setMessages(newHistory);
+        setAnsweredCount(newAnsweredCount - 1);
+        setInput(msg); // remet le texte dans la zone de saisie : rien à retaper
+        setMessages((m) => [
+          ...m,
+          {
+            role: "assistant",
+            content:
+              lang === "fr"
+                ? "⏳ Beaucoup de candidats répondent en même temps, ARIA est surchargé. Attendez 10 secondes puis renvoyez le même message — il n'est pas perdu."
+                : "⏳ Many candidates are answering at once, ARIA is overloaded. Wait 10s and resend the same message.",
           },
-        }),
-      ]);
+        ]);
+        return;
+      }
       const userMsgWithAI: Msg = { role: "user", content: msg, aiPercent: detectRes.percent ?? undefined };
       const updatedHistory = [...messages, userMsgWithAI];
       const finalHistory = [
@@ -400,12 +429,16 @@ export default function InterviewApp() {
       }
     } catch (e) {
       console.error(e);
+      setAnsweredCount((c) => Math.max(0, c - 1));
+      setInput(msg); // remet le texte : le candidat clique juste Envoyer
       setMessages((m) => [
         ...m,
         {
           role: "assistant",
           content:
-            "[The dungeon trembles... the connection falters. Try again.]",
+            lang === "fr"
+              ? "⏳ Connexion surchargée (trop de candidats en même temps). Votre texte est remis dans la zone de saisie : attendez 10 secondes puis cliquez Envoyer."
+              : "⏳ Overloaded connection (too many candidates at once). Your text was put back in the input: wait 10s then press Send.",
         },
       ]);
     } finally {
